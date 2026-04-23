@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefebs/Boss.meta
+guid: 42caef3e03fb2dd4c94f37a55cf89564
+========
+guid: 73b3f30a3b7456846af721c9bc8db8fc
+>>>>>>>> preview-pr:Assets/Scripts/Enemy/Spawner.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

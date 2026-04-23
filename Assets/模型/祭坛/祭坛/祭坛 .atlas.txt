@@ -1,0 +1,24 @@
+祭坛 .png
+size:6171,2411
+filter:Linear,Linear
+pma:true
+BaoShi1
+bounds:5923,2020,246,389
+BaoShi2
+bounds:5923,1629,246,389
+BaoShi3
+bounds:5923,1238,246,389
+Bei2
+bounds:1805,16,2393,1460
+offsets:1,1,2395,1462
+rotate:90
+DiZuo
+bounds:2,2,2407,1801
+offsets:1,1,2409,1803
+rotate:90
+FuWen1
+bounds:3267,156,2253,1421
+rotate:90
+Guang
+bounds:4690,161,2248,1231
+rotate:90

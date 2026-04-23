@@ -1,0 +1,13 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"tx-zadi-05","bone":"root","attachment":"tx-zadi-05"},
+{"name":"tx-zadi-04","bone":"root","attachment":"tx-zadi-04"},
+{"name":"tx-zadi-03","bone":"root","attachment":"tx-zadi-03"},
+{"name":"tx-zadi-02","bone":"root","attachment":"tx-zadi-02"},
+{"name":"tx-zadi-01","bone":"root","attachment":"tx-zadi-01"},
+],"skins":{"default":{
+"tx-zadi-05":{"tx-zadi-05":{"x":889,"y":575.5,"width":808,"height":835}},
+"tx-zadi-04":{"tx-zadi-04":{"x":937.5,"y":575.5,"width":905,"height":835}},
+"tx-zadi-03":{"tx-zadi-03":{"x":977,"y":575.5,"width":984,"height":835}},
+"tx-zadi-02":{"tx-zadi-02":{"x":1159,"y":546,"width":620,"height":776}},
+"tx-zadi-01":{"tx-zadi-01":{"x":1163.5,"y":524,"width":389,"height":682}},
+}}, "animations": { "animation": {} }}
