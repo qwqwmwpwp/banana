@@ -6,7 +6,7 @@ namespace qwq
 {
     public class Bullet : MonoBehaviour
     {
-        public ElementEnmu enmu = ElementEnmu.water;
+        public ElementType enmu = ElementType.water;
         public float v = 10f;
         public Vector2 direction;
         public Rigidbody2D rb {  get; private set; }
@@ -40,7 +40,7 @@ namespace qwq
         public void Trigger(GameObject gObj);
     }
 
-    public enum ElementEnmu
+    public enum ElementType
     {
         water,
         ice

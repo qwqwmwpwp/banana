@@ -7,38 +7,38 @@ namespace qwq
 {
     public class Ball : MonoBehaviour, IInteraction
     {
-        HSM.StateMachine machine;
-        private BallRoot root;
+        HSM.StateMachine stateMachine;
+        private BallRoot rootState;
 
-        public ElementEnmu elementEnmu;
+        public ElementType elementEnmu; // 元素类型
         [HideInInspector] public SpriteRenderer sprite;
         [HideInInspector] public Rigidbody2D rb;
 
-        public float iceSpeed = 4f;
+        public float iceSpeed = 4f;// 冰元素速度
 
         public void Awake()
         {
             sprite = GetComponent<SpriteRenderer>();
             rb = GetComponent<Rigidbody2D>();
 
-            root = new BallRoot(machine, this);
-            StateMachineBuilder builder = new StateMachineBuilder(root);
-            machine = builder.Build();
+            rootState = new BallRoot(stateMachine, this);
+            StateMachineBuilder builder = new StateMachineBuilder(rootState);
+            stateMachine = builder.Build();
         }
 
         private void Update()
         {
-            machine.Tick(Time.deltaTime);
+            stateMachine.Tick(Time.deltaTime);
 
         }
 
         public void Trigger(GameObject gObj)
         {
-            ElementEnmu newElementEnmu = elementEnmu;
+            ElementType newElementEnmu = elementEnmu;
 
             if (gObj.GetComponent<Bullet>() is Bullet bullet)
             {
-                if (bullet.enmu != ElementEnmu.water && bullet.enmu != ElementEnmu.ice)
+                if (bullet.enmu != ElementType.water && bullet.enmu != ElementType.ice)
                     return;
 
                 newElementEnmu = bullet.enmu;
@@ -47,10 +47,10 @@ namespace qwq
 
             if (gObj.GetComponent<AirWeapon>() is AirWeapon airWeapon)
             {
-                if (airWeapon.elementEnmu != ElementEnmu.water && airWeapon.elementEnmu != ElementEnmu.ice)
+                if (airWeapon.elementType != ElementType.water && airWeapon.elementType != ElementType.ice)
                     return;
 
-                newElementEnmu = airWeapon.elementEnmu;
+                newElementEnmu = airWeapon.elementType;
             }
 
             elementEnmu = newElementEnmu;
@@ -58,7 +58,7 @@ namespace qwq
 
         public void OnTriggerEnter2D(Collider2D collision)
         {
-            root.TriggerEnter(collision);
+            rootState.TriggerEnter(collision);
         }
     }
 }
@@ -82,8 +82,8 @@ namespace HSM
         {
             switch (Ball.elementEnmu)
             {
-                case ElementEnmu.water: return water;
-                case ElementEnmu.ice: return ice;
+                case ElementType.water: return water;
+                case ElementType.ice: return ice;
             }
             return null;
         }
@@ -93,10 +93,10 @@ namespace HSM
             InteractionState newState = null;
             switch (Ball.elementEnmu)
             {
-                case ElementEnmu.water:
+                case ElementType.water:
                     newState = water;
                     break;
-                case ElementEnmu.ice:
+                case ElementType.ice:
                     newState = ice;
                     break;
             }
@@ -131,7 +131,7 @@ namespace HSM
             }
 
             if (collision.GetComponent<Bullet>() is Bullet collidedBullet
-         && collidedBullet.enmu == ElementEnmu.water)
+         && collidedBullet.enmu == ElementType.water)
             {
                 Vector2 AxisSymmetry = PlayerTools.Direction_8(ball.transform.position, collidedBullet.transform.position);
                 Vector2 direction = 2 * AxisSymmetry - collidedBullet.rb.velocity.normalized;
@@ -139,7 +139,7 @@ namespace HSM
             }
 
             if (collision.GetComponent<Ball>() is Ball coball
-                && coball.elementEnmu == ElementEnmu.ice)
+                && coball.elementEnmu == ElementType.ice)
             {
                 Vector2 AxisSymmetry = PlayerTools.Direction_8(ball.transform.position, coball.transform.position);
                 Vector2 direction = 2 * AxisSymmetry - coball.rb.velocity.normalized;
@@ -173,7 +173,7 @@ namespace HSM
 
             if (collision.GetComponent<Platform>() is Platform platform)
             {
-                if (platform.elementEnmu != ElementEnmu.ice) return;
+                if (platform.elementEnmu != ElementType.ice) return;
 
                 // 获取球的当前速度向量
                 Vector2 ballVelocity = ball.rb.velocity;
@@ -202,7 +202,7 @@ namespace HSM
 
             //子弹是冰元素
             if (collision.GetComponent<Bullet>() is Bullet collidedBullet
-                && collidedBullet.enmu == ElementEnmu.ice)
+                && collidedBullet.enmu == ElementType.ice)
             {
                 // 将球的速度设置为子弹方向乘以冰速度
                 ball.rb.velocity = collidedBullet.direction * ball.iceSpeed;
@@ -214,7 +214,7 @@ namespace HSM
 
             //球碰撞
             if (collision.GetComponent<Ball>() is Ball collidedBall
-                &&collidedBall.elementEnmu==ElementEnmu.ice)
+                &&collidedBall.elementEnmu==ElementType.ice)
             {
                 // 如果当前球速度过小，不处理碰撞
                 if (ball.rb.velocity.magnitude < 0.1f) return;

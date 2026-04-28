@@ -43,14 +43,15 @@ namespace HSM
             ctx.anim.SetAnim(ctx.anim.switchAnim, true);
             t = t_max;
 
-            if (ctx.elementEnmu == ElementEnmu.water)
-                ctx.elementEnmu = ElementEnmu.ice;
+            if (ctx.elementType == ElementType.water)
+                ctx.elementType = ElementType.ice;
             else
-                ctx.elementEnmu = ElementEnmu.water;
+                ctx.elementType = ElementType.water;
 
             var rb = ctx.rb;
             if (rb != null)
             {
+                ctx.velocity = new(0f, 0f);
                 var v = rb.velocity;
                 v.y = ctx.swichSpeed;
                 rb.velocity = v;
@@ -78,7 +79,7 @@ namespace HSM
         }
         protected override State GetTransition()
         {
-            if (!ctx.ActiveWeapon.IsEnter())
+            if (!ctx.activeWeapon.IsEnter())
             {
                 return ((PlayerRoot)Parent).Act;
             }
@@ -87,23 +88,24 @@ namespace HSM
         }
         protected override void OnEnter()
         {
+            Debug.Log("qwq");
             if (!ctx.detection.isGrounded && !ctx.detection.isPlatform)
-                ctx.ActiveWeapon = ctx.airWeapon;
-            else if (ctx.elementEnmu == ElementEnmu.ice)
-                ctx.ActiveWeapon = ctx.iceWeapon;
+                ctx.activeWeapon = ctx.airWeapon;
+            else if (ctx.elementType == ElementType.ice)
+                ctx.activeWeapon = ctx.iceWeapon;
             else
-                ctx.ActiveWeapon = ctx.waterWeapon;
+                ctx.activeWeapon = ctx.waterWeapon;
 
-            ctx.ActiveWeapon.OnEnter();
+            ctx.activeWeapon.OnEnter();
         }
         protected override void OnUpdate(float deltaTime)
         {
-            ctx.ActiveWeapon.OnUpdate(deltaTime);
+            ctx.activeWeapon.OnUpdate(deltaTime);
 
         }
         protected override void OnExit()
         {
-            ctx.ActiveWeapon.OnExit();
+            ctx.activeWeapon.OnExit();
 
         }
     }
@@ -130,7 +132,7 @@ namespace HSM
         {
             if (ctx.isSwitchWeapon && ctx.swich_t <= 0) return ((PlayerRoot)Parent).switchWeapon;
 
-            if (ctx.isAttack&&ctx.ActiveWeapon.IsEnter()) return ((PlayerRoot)Parent).Attack;
+            if (ctx.isAttackInput&&(!ctx.activeWeapon||ctx.activeWeapon.IsEnter())) return ((PlayerRoot)Parent).Attack;
 
             return null;
         }

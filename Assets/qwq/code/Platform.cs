@@ -8,9 +8,9 @@ namespace qwq
         private PlatformState root;
         HSM.StateMachine machine;
 
-        public ElementEnmu elementEnmu;
-        public SpriteRenderer sprite;
-        public BoxCollider2D collider2d;
+        public ElementType elementEnmu;
+        [HideInInspector] public SpriteRenderer sprite;
+        [HideInInspector] public BoxCollider2D collider2d;
 
         public float inertialCoefficient = 0f;
         public float InitialState_t = 3f;
@@ -35,11 +35,11 @@ namespace qwq
 
         public void Trigger(GameObject gObj)
         {
-            ElementEnmu newElementEnmu = elementEnmu;
+            ElementType newElementEnmu = elementEnmu;
 
             if (gObj.GetComponent<Bullet>() is Bullet bullet)
             {
-                if (bullet.enmu != ElementEnmu.water && bullet.enmu != ElementEnmu.ice)
+                if (bullet.enmu != ElementType.water && bullet.enmu != ElementType.ice)
                     return;
 
                 newElementEnmu = bullet.enmu;
@@ -48,10 +48,10 @@ namespace qwq
 
             if (gObj.GetComponent<AirWeapon>() is AirWeapon airWeapon)
             {
-                if (airWeapon.elementEnmu != ElementEnmu.water && airWeapon.elementEnmu != ElementEnmu.ice)
+                if (airWeapon.elementType != ElementType.water && airWeapon.elementType != ElementType.ice)
                     return;
 
-                newElementEnmu = airWeapon.elementEnmu;
+                newElementEnmu = airWeapon.elementType;
             }
 
             elementEnmu = newElementEnmu;
@@ -126,7 +126,7 @@ namespace HSM
                 {
                     player.ctx.velocity.x = Mathf.MoveTowards(player.ctx.velocity.x,
                         inertia,
-                        deltaTime * player.ctx.accel * Platform.inertialCoefficient);
+                        deltaTime * player.ctx.acceleration * Platform.inertialCoefficient);
                 }
                 inertia = player.ctx.velocity.x;
             }
@@ -198,7 +198,7 @@ namespace HSM
         IcePlatform ice;
         Platform Platform;
 
-        public ElementEnmu initialElement;
+        public ElementType initialElement;
         public float initialState_t;
         public PlatformState(StateMachine machine, Platform platform) : base(machine, null)
         {
@@ -219,9 +219,9 @@ namespace HSM
 
             switch (Platform.elementEnmu)
             {
-                case ElementEnmu.water:
+                case ElementType.water:
                     return water;
-                case ElementEnmu.ice:
+                case ElementType.ice:
                     return ice;
             }
             return null;
@@ -235,10 +235,10 @@ namespace HSM
 
             switch (Platform.elementEnmu)
             {
-                case ElementEnmu.water:
+                case ElementType.water:
                     newState = water;
                     break;
-                case ElementEnmu.ice:
+                case ElementType.ice:
                     newState = ice;
                     break;
             }

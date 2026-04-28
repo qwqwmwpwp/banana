@@ -37,6 +37,7 @@ namespace HSM
             ctx.anim.SetAnim(ctx.anim.jumpAnim, true);
         }
     }
+
     public class Falling : State
     {
         readonly PlayerContext ctx;
@@ -47,10 +48,10 @@ namespace HSM
         }
         protected override State GetTransition()
         {
-            if (ctx.jumpPressed && ctx.isDoubleJump)
+            if (ctx.jumpPressed && ctx.canDoubleJump)
             {
                 ctx.jumpPressed = false;
-                ctx.isDoubleJump = false;
+                ctx.canDoubleJump = false;
 
                 var rb = ctx.rb;
                 if (rb != null)
@@ -67,8 +68,8 @@ namespace HSM
 
         protected override void OnUpdate(float deltaTime)
         {
-            var target = ctx.move.x * ctx.moveSpeed;
-            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, target, ctx.accel * deltaTime);
+            var target = ctx.moveInput.x * ctx.moveSpeed;
+            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, target, ctx.acceleration * deltaTime);
 
             float localScale_x;
             if (ctx.rb.velocity.x > 0.1f)
@@ -99,7 +100,7 @@ namespace HSM
         protected override void OnEnter()
         {
             ctx.anim.SetAnim(ctx.anim.jumpAnim, true);
-            t = ctx.jumpInertia_t;
+            t = ctx.jumpInertiaTime;
         }
         protected override void OnUpdate(float deltaTime)
         {

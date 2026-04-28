@@ -15,23 +15,15 @@ namespace qwq
     {
         public Rigidbody2D rb;
         public PlayerAnim anim;
-        public PlayerControls_q playerControls;//玩家输入
-        public PlayerContext ctx = new PlayerContext();
+        public PlayerControls_q playerControls;// 玩家输入控制器
+        public PlayerContext ctx = new PlayerContext();//玩家参数
         [HideInInspector] public static PlayerContext playerctx {  get; private set; }
 
         State root;
         HSM.StateMachine machine;
         string lastPath;
 
-        public Vector2 direction;
-        [Header("移动信息")]
-        public float moveSpeed; // 移动速度
-        public float steering_t;
-        [Header("跳跃参数")]
-        public bool jumpPressed;    // 是否按住跳跃键
-        public float jump_t_max;//按键延迟
-        float jump_t;
-        public float jumpForce = 12f;       // 起跳时的爆发力
+      [HideInInspector]public Vector2 direction;
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -76,7 +68,7 @@ namespace qwq
 
             if (ctx.energy < ctx.energy_max) ctx.energy += 2 * Time.deltaTime;
 
-            ctx.move.x = Mathf.Clamp(direction.x, -1f, 1f);
+            ctx.moveInput.x = Mathf.Clamp(direction.x, -1f, 1f);
 
             Attack();
             Jump();
@@ -87,7 +79,7 @@ namespace qwq
             var pash = StatePath(machine.Root.Leaf());
             if (pash != lastPath)
             {
-                //Debug.Log("State: " + pash);
+                Debug.Log("State: " + pash);
                 lastPath = pash;
             }
         }
@@ -122,7 +114,6 @@ namespace qwq
             if (playerControls.GamePlay.Jump.triggered)
             {
                 ctx.jumpPressed = true;
-                jump_t = 0;
             }
             else
             {
@@ -131,27 +122,20 @@ namespace qwq
 
             if (ctx.detection.isGrounded || ctx.detection.isPlatform)
             {
-                ctx.isDoubleJump = true;
+                ctx.canDoubleJump = true;
             }
-            //if (jump_t > jump_t_max)
-            //{
-            //    ctx.jumpPressed = false;
-            //}
-            //else
-            //{
-            //    jump_t += Time.deltaTime;
-            //}
+           
         }
 
         private void Attack()
         {
             if (playerControls.GamePlay.Attack.IsPressed())
             {
-                ctx.isAttack = true;
+                ctx.isAttackInput = true;
             }
             else
             {
-                ctx.isAttack = false;
+                ctx.isAttackInput = false;
             }
         }
 
@@ -159,16 +143,6 @@ namespace qwq
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             ctx.mouseWorldPos = (mouseWorldPos - (Vector2)transform.position).normalized;
-
-            //float angle = Mathf.Atan2(ctx.mouseWorldPos.y, ctx.mouseWorldPos.x) * Mathf.Rad2Deg;
-            //int angle_abs;
-            //if (angle < 0) angle_abs = -1;
-            //else angle_abs = 1;
-
-            //int x = (int)(Mathf.Abs(angle) + 22.5) / 45;
-            //float radians = angle_abs * x * 45 * Mathf.Deg2Rad;
-            //ctx.mouseWorldPos_8 = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
-
             ctx.mouseWorldPos_8 = PlayerTools.Direction_8((Vector2)transform.position+ctx.detection.center, mouseWorldPos);
         }
 
@@ -184,26 +158,27 @@ namespace qwq
 
 
         [Header("跳跃")]
-        public float jumpSpeed = 7f;
-        public float jumpInertia_t = 0.5f;
-        public bool jumpPressed;
-        public bool isDoubleJump = true;
-        public float basicGravityScale = 3f;
+        public float jumpSpeed = 7f;// 跳跃初始速度
+        public float jumpInertiaTime = 0.1f;// 跳跃惯性持续时间
+        public bool jumpPressed;// 跳跃按键按下状态
+        public bool canDoubleJump = true;// 是否允许二段跳
+        public float basicGravityScale = 3f;// 基础重力
 
         [Header("移动")]
-        public Vector2 move;
-        public Vector2 velocity;
-        public float accel = 40f;
-        public float moveSpeed = 6f;
+        public Vector2 moveInput;// 移动输入方向
+        public Vector2 velocity;// 当前速度
+        public float acceleration = 40f;// 加速度
+        public float moveSpeed = 6f;// 最大移动速度
 
         [Header("攻击")]
-        public ElementEnmu elementEnmu;
-        public Weapon ActiveWeapon;
-        public IceWeapon iceWeapon;
-        public WaterWeapon waterWeapon;
-        public Weapon airWeapon;
+        public ElementType elementType;// 当前元素类型
+        public Weapon activeWeapon;// 当前激活的武器
+        public IceWeapon iceWeapon;// 冰元素武器
+        public WaterWeapon waterWeapon;// 水元素武器
+        public Weapon airWeapon; // 空中武器
+        public bool isAttackInput;//攻击输入
 
-        public bool isAttack;
+        [Header("能量")]
         public float energy_max = 8f;
         public float energy = 8f;
 

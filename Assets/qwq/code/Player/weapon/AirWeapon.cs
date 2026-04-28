@@ -8,35 +8,35 @@ public class AirWeapon : Weapon
     Animator anim;
     BoxCollider2D boxCollider;
 
- public ElementEnmu elementEnmu;
+    public ElementType elementType;  // 元素类型
 
-    public bool isAttack;
-    float t;
-    public float t_max = 0.15f;
-   float cooling;
-    public float Cooling_max = 0.1f;
+    public bool canAttack;  // 攻击许可
+    float windupTimer;  // 前摇计时
+    public float maxWindup = 0.15f;  // 最大前摇
+    float cooldownTimer;  // 冷却计时
+    public float maxCooldown = 0.1f;  // 最大冷却
     private void Awake()
     {
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
     }
 
-    public override bool IsEnter() => isAttack;
+    public override bool IsEnter() => canAttack;
 
     private void Update()
     {
         if (ctx == null) return;
         
-        elementEnmu = ctx.elementEnmu;
+        elementType = ctx.elementType;
 
         if (ctx.detection.isPlatform || ctx.detection.isGrounded)
         {
-            if (cooling > 0)
+            if (cooldownTimer > 0)
             {
-                cooling -= Time.deltaTime;
+                cooldownTimer -= Time.deltaTime;
             }
 
-            isAttack = true;
+            canAttack = true;
         }
 
     }
@@ -48,7 +48,7 @@ public class AirWeapon : Weapon
 
     public override void OnEnter()
     {
-        t = t_max;
+        windupTimer = maxWindup;
         ctx.anim.SetAnim(ctx.anim.airAttackAnim, false);
         anim.SetTrigger("attack");
 
@@ -64,17 +64,17 @@ public class AirWeapon : Weapon
     public override void OnUpdate(float deltaTime)
     {
 
-        if (t > 0)
+        if (windupTimer > 0)
         {
             ctx.velocity = Vector2.zero;
             ctx.rb.gravityScale = 0;
             ctx.rb.velocity = new(ctx.rb.velocity.x, 0);
-            t -= deltaTime;
+            windupTimer -= deltaTime;
         }
         else
         {
-            cooling = Cooling_max;
-            isAttack = false;
+            cooldownTimer = maxCooldown;
+            canAttack = false;
         }
     }
 }

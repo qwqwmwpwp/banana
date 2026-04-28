@@ -7,16 +7,18 @@ namespace qwq
 {
     public class WaterWeapon : Weapon
     {
-        public GameObject Bullet;
+        [Header("子弹")]
+        public GameObject bulletPrefab;  // 子弹预制体
 
-        public bool isAttack;
-        float t;
-        public float t_max = 0.15f;
-        float cooling;
-        public float Cooling_max = 0.1f;
+        [Header("参数设置")]
+        float windupTimer;  // 前摇计时
+        public float maxWindup = 0.15f;  // 最大前摇
+        float cooldownTimer;  // 冷却计时
+        public float maxCooldown = 0.1f;  // 最大冷却
+        public bool canAttack;  // 攻击许可
 
-        public float r = 1;
-        public Vector2 displacement;
+        public float spawnRadius = 1;  // 生成半径
+        public Vector2 spawnOffset;  // 生成偏移
 
         private void Awake()
         {
@@ -24,21 +26,21 @@ namespace qwq
         }
         private void Update()
         {
-            if (cooling > 0)
+            if (cooldownTimer > 0)
             {
-                cooling -= Time.deltaTime;
+                cooldownTimer -= Time.deltaTime;
        
             }
             else
             {
-                isAttack = true;
+                canAttack = true;
             }
         }
 
         public override void OnEnter()
         {
-            ctx.anim.SetAnim(ctx.anim.rangedAttackAnim, true).MixDuration = 0.02f;
-            isAttack = true;
+            ctx.anim.SetAnim(ctx.anim.rangedAttackAnim, false).MixDuration = 0.02f;
+            canAttack = true;
         }
 
         public override void OnExit()
@@ -48,34 +50,34 @@ namespace qwq
 
         public override void OnUpdate(float deltaTime)
         {
-            if (cooling > 0) return;
+            if (cooldownTimer > 0) return;
 
             ctx.velocity = Vector2.zero;
-            if (t > t_max)
+            if (windupTimer > maxWindup)
             {
                 if (!ctx.EnergyValueUPdate(-1)) return;  // 能量不足，无法攻击
 
-                t = 0;
+                windupTimer = 0;
                 Vector2 Bullet_position;
-                Bullet_position = ctx.mouseWorldPos_8 * r + displacement + (Vector2)ctx.transform.position;
+                Bullet_position = ctx.mouseWorldPos_8 * spawnRadius + spawnOffset + (Vector2)ctx.transform.position;
                 float angle = Mathf.Atan2(ctx.mouseWorldPos_8.y, ctx.mouseWorldPos_8.x) * Mathf.Rad2Deg;
 
-                GameObject newBullet = UnityEngine.Object.Instantiate(Bullet, Bullet_position, Quaternion.Euler(0, 0, angle));
+                GameObject newBullet = UnityEngine.Object.Instantiate(bulletPrefab, Bullet_position, Quaternion.Euler(0, 0, angle));
                 newBullet.GetComponent<Bullet>().direction = ctx.mouseWorldPos_8;
 
-                cooling = Cooling_max;
-                isAttack = false;
+                cooldownTimer = maxCooldown;
+                canAttack = false;
             }
             else
             {
-                t += deltaTime;
+                windupTimer += deltaTime;
             }
 
         }
 
         public override bool IsEnter()
         {
-            return isAttack;
+            return canAttack;
         }
     }
 }

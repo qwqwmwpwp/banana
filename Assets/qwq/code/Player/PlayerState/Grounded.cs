@@ -56,7 +56,7 @@ namespace HSM
         }
         protected override State GetTransition()
         {
-            return Mathf.Abs(ctx.move.x) > 0.01f ? ((Grounded)Parent).Move : null;
+            return Mathf.Abs(ctx.moveInput.x) > 0.01f ? ((Grounded)Parent).Move : null;
         }
 
         protected override void OnEnter()
@@ -66,7 +66,7 @@ namespace HSM
 
         protected override void OnUpdate(float deltaTime)
         {
-            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, 0, ctx.accel * deltaTime);
+            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, 0, ctx.acceleration * deltaTime);
         }
     }
 
@@ -81,7 +81,7 @@ namespace HSM
 
         protected override State GetTransition()
         {
-            return Mathf.Abs(ctx.move.x) <= 0.1f ? ((Grounded)Parent).Idle : null;
+            return Mathf.Abs(ctx.moveInput.x) <= 0.1f ? ((Grounded)Parent).Idle : null;
         }
 
         protected override void OnEnter()
@@ -91,15 +91,15 @@ namespace HSM
 
         protected override void OnUpdate(float deltaTime)
         {
-            var target = ctx.move.x * ctx.moveSpeed;
-            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, target, ctx.accel * deltaTime);
+            var target = ctx.moveInput.x * ctx.moveSpeed;
+            ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, target, ctx.acceleration * deltaTime);
 
             float localScale_x;
-            if (ctx.move.x > 0.1f)
+            if (ctx.moveInput.x > 0.1f)
             {
                 localScale_x = Mathf.Abs(ctx.transform.localScale.x);
             }
-            else if (ctx.move.x < -0.1f)
+            else if (ctx.moveInput.x < -0.1f)
             {
                 localScale_x = -1 * Mathf.Abs(ctx.transform.localScale.x);
             }
