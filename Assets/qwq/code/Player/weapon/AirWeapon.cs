@@ -42,8 +42,7 @@ public class AirWeapon : Weapon
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        collision.GetComponent<IInteraction>()?.Trigger(gameObject);
-        Debug.Log(collision.name);
+
     }
 
     public override void OnEnter()

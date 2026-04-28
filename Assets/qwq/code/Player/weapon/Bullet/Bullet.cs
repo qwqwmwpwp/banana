@@ -28,8 +28,7 @@ namespace qwq
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            collision.GetComponent<IInteraction>()?.Trigger(gameObject);
-            Debug.Log(collision.name);
+
         }
     }
 

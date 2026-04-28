@@ -68,8 +68,8 @@ namespace HSM
     public class BallRoot : InteractionState
     {
         Ball Ball;
-        IceBall ice;
-        WaterBall water;
+      public  IceBall ice;
+        public WaterBall water;
 
         public BallRoot(StateMachine machine, Ball ball) : base(machine, null)
         {
@@ -90,24 +90,24 @@ namespace HSM
 
         protected override State GetTransition()
         {
-            InteractionState newState = null;
-            switch (Ball.elementEnmu)
-            {
-                case ElementType.water:
-                    newState = water;
-                    break;
-                case ElementType.ice:
-                    newState = ice;
-                    break;
-            }
-            if (newState != ActiveChild) return newState;
+            //InteractionState newState = null;
+            //switch (Ball.elementEnmu)
+            //{
+            //    case ElementType.water:
+            //        newState = water;
+            //        break;
+            //    case ElementType.ice:
+            //        newState = ice;
+            //        break;
+            //}
+            //if (newState != ActiveChild) return newState;
 
             return null;
         }
 
     }
 
-    internal class WaterBall : InteractionState
+public class WaterBall : InteractionState
     {
         private Ball ball;
 
@@ -115,6 +115,9 @@ namespace HSM
         {
             this.ball = ball;
         }
+
+        protected override State GetTransition() =>
+            ball.elementEnmu == ElementType.ice ? ((BallRoot)Parent).ice : null;
 
         protected override void OnEnter()
         {
@@ -130,9 +133,15 @@ namespace HSM
                 player.ctx.rb.velocity = new(player.ctx.velocity.x, direction.y * 15);
             }
 
-            if (collision.GetComponent<Bullet>() is Bullet collidedBullet
-         && collidedBullet.enmu == ElementType.water)
+            if (collision.GetComponent<Bullet>() is Bullet collidedBullet)
             {
+                if (collidedBullet.enmu == ElementType.ice)
+                {
+                    ball.elementEnmu = collidedBullet.enmu;
+                    Object.Destroy(collision.gameObject);
+                    return;
+                }
+
                 Vector2 AxisSymmetry = PlayerTools.Direction_8(ball.transform.position, collidedBullet.transform.position);
                 Vector2 direction = 2 * AxisSymmetry - collidedBullet.rb.velocity.normalized;
                 collidedBullet.rb.velocity = direction * collidedBullet.v;
@@ -148,8 +157,6 @@ namespace HSM
             }
         }
 
-        
-
     }
 
     public class IceBall : InteractionState
@@ -162,6 +169,9 @@ namespace HSM
 
         }
 
+        protected override State GetTransition() =>
+            ball.elementEnmu == ElementType.water ? ((BallRoot)Parent).water : null;
+
         protected override void OnEnter()
         {
             ball.sprite.color = Color.white;
@@ -169,7 +179,6 @@ namespace HSM
 
         protected override void OnTriggerEnter(Collider2D collision)
         {
-
 
             if (collision.GetComponent<Platform>() is Platform platform)
             {
@@ -201,9 +210,14 @@ namespace HSM
             }
 
             //子弹是冰元素
-            if (collision.GetComponent<Bullet>() is Bullet collidedBullet
-                && collidedBullet.enmu == ElementType.ice)
+            if (collision.GetComponent<Bullet>() is Bullet collidedBullet)
             {
+                if (collidedBullet.enmu == ElementType.water)
+                {
+                    ball.elementEnmu = collidedBullet.enmu;
+                    Object.Destroy(collision.gameObject);
+                    return;
+                }
                 // 将球的速度设置为子弹方向乘以冰速度
                 ball.rb.velocity = collidedBullet.direction * ball.iceSpeed;
                 // 销毁冰元素子弹
@@ -233,6 +247,4 @@ namespace HSM
             }
         }
     }
-
-
 }
