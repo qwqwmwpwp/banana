@@ -77,11 +77,11 @@ namespace qwq
             machine.Tick(Time.deltaTime);
 
             var pash = StatePath(machine.Root.Leaf());
-            if (pash != lastPath)
-            {
-                Debug.Log("State: " + pash);
-                lastPath = pash;
-            }
+            //if (pash != lastPath)
+            //{
+            //    Debug.Log("State: " + pash);
+            //    lastPath = pash;
+            //}
         }
 
         private void FixedUpdate()

@@ -13,7 +13,7 @@ namespace qwq
 
     public abstract class Weapon : MonoBehaviour, IWeapon
     {
-        protected PlayerContext ctx;
+        protected  PlayerContext ctx;
         public virtual void Initialize(PlayerContext ctx)
         {
             this.ctx = ctx;

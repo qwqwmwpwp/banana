@@ -21,8 +21,6 @@ namespace HSM
 
         protected override State GetInitialState()
         {
-            if (ctx.rb.velocity.y > 0) return doubleJump;
-
             return falling;
         }
         protected override State GetTransition()
@@ -72,11 +70,11 @@ namespace HSM
             ctx.velocity.x = Mathf.MoveTowards(ctx.velocity.x, target, ctx.acceleration * deltaTime);
 
             float localScale_x;
-            if (ctx.rb.velocity.x > 0.1f)
+            if (ctx.moveInput.x > 0.1f)
             {
                 localScale_x = Mathf.Abs(ctx.transform.localScale.x);
             }
-            else if (ctx.rb.velocity.x < -0.1f)
+            else if (ctx.moveInput.x < -0.1f)
             {
                 localScale_x = -1 * Mathf.Abs(ctx.transform.localScale.x);
             }

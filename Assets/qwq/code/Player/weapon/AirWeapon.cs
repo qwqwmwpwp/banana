@@ -15,6 +15,9 @@ public class AirWeapon : Weapon
     public float maxWindup = 0.15f;  // 最大前摇
     float cooldownTimer;  // 冷却计时
     public float maxCooldown = 0.1f;  // 最大冷却
+    public Vector2 direction;//攻击方向
+    public float moveSpeed = 3;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -26,14 +29,13 @@ public class AirWeapon : Weapon
     private void Update()
     {
         if (ctx == null) return;
-        
-        elementType = ctx.elementType;
 
         if (ctx.detection.isPlatform || ctx.detection.isGrounded)
         {
             if (cooldownTimer > 0)
             {
                 cooldownTimer -= Time.deltaTime;
+                return;
             }
 
             canAttack = true;
@@ -47,9 +49,14 @@ public class AirWeapon : Weapon
 
     public override void OnEnter()
     {
+        elementType = ctx.elementType;
         windupTimer = maxWindup;
         ctx.anim.SetAnim(ctx.anim.airAttackAnim, false);
         anim.SetTrigger("attack");
+        direction = ctx.moveInput;
+        if (ctx.moveInput.x < 0.1 && ctx.moveInput.x > -0.1)
+            direction = new(ctx.transform.localScale.x, 0);
+        
 
         boxCollider.enabled = true;
     }
@@ -57,7 +64,7 @@ public class AirWeapon : Weapon
     public override void OnExit()
     {
         boxCollider.enabled = false;
-
+        cooldownTimer = maxCooldown;
     }
 
     public override void OnUpdate(float deltaTime)
@@ -65,9 +72,9 @@ public class AirWeapon : Weapon
 
         if (windupTimer > 0)
         {
-            ctx.velocity = Vector2.zero;
             ctx.rb.gravityScale = 0;
-            ctx.rb.velocity = new(ctx.rb.velocity.x, 0);
+            ctx.velocity = new(direction.x*moveSpeed, 0);
+
             windupTimer -= deltaTime;
         }
         else

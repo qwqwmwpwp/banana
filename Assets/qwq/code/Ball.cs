@@ -90,18 +90,6 @@ namespace HSM
 
         protected override State GetTransition()
         {
-            //InteractionState newState = null;
-            //switch (Ball.elementEnmu)
-            //{
-            //    case ElementType.water:
-            //        newState = water;
-            //        break;
-            //    case ElementType.ice:
-            //        newState = ice;
-            //        break;
-            //}
-            //if (newState != ActiveChild) return newState;
-
             return null;
         }
 
@@ -131,6 +119,15 @@ public class WaterBall : InteractionState
                 Vector2 direction = PlayerTools.Direction_8(ball.transform.position, player.ctx.transform.position);
                 player.ctx.velocity.x = direction.x * 15;
                 player.ctx.rb.velocity = new(player.ctx.velocity.x, direction.y * 15);
+            }
+
+            if (collision.GetComponent<AirWeapon>() is AirWeapon airWeapon)
+            {
+                if (airWeapon.elementType == ElementType.ice)
+                {
+                    ball.elementEnmu = airWeapon.elementType;
+                    return;
+                }
             }
 
             if (collision.GetComponent<Bullet>() is Bullet collidedBullet)
@@ -179,7 +176,6 @@ public class WaterBall : InteractionState
 
         protected override void OnTriggerEnter(Collider2D collision)
         {
-
             if (collision.GetComponent<Platform>() is Platform platform)
             {
                 if (platform.elementEnmu != ElementType.ice) return;
@@ -209,9 +205,18 @@ public class WaterBall : InteractionState
 
             }
 
-            //×Óµ¯ÊÇ±ùÔªËØ
+            if (collision.GetComponent<AirWeapon>() is AirWeapon airWeapon)
+            {
+                if (airWeapon.elementType == ElementType.water)
+                {
+                   ball.elementEnmu = airWeapon.elementType;
+                    return;
+                }
+            }
+
             if (collision.GetComponent<Bullet>() is Bullet collidedBullet)
             {
+
                 if (collidedBullet.enmu == ElementType.water)
                 {
                     ball.elementEnmu = collidedBullet.enmu;
